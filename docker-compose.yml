@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  backend:
+    # 현재 디렉토리(.)의 Dockerfile을 빌드
+    build: .
+    # 컨테이너 이름 지정
+    container_name: bottabot_backend
+    # 호스트 포트 8000번과 컨테이너 포트 8000번 연결
+    ports:
+      - "8000:8000"
+    # 소스 코드 변경 시 실시간 반영을 위한 볼륨 바인딩 (개발용)
+    volumes:
+      - .:/app
+    # 컨테이너 다운 시 자동 재시작 설정
+    restart: always
+
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: pgvector-db
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      # 현재 디렉토리의 postgres_data 폴더에 데이터 저장
+      - ./db_data:/var/lib/postgresql/data

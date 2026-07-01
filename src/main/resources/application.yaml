@@ -1,3 +1,32 @@
 spring:
   application:
     name: BottaBotBackend
+
+  # 1. PostgreSQL 데이터소스 설정
+  datasource:
+    # 도커 네트워크 내부에서는 서비스 이름(예: postgres)으로 접근해야 합니다.
+    url: jdbc:postgresql://localhost:5432/${DB_NAME:bottadb}
+    driver-class-name: org.postgresql.Driver
+    username: ${DB_USERNAME:botta}
+    password: ${DB_PASSWORD:botta@2026}
+
+  # 2. JPA / Hibernate 설정
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        highlight_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: false
+
+  # 3. Redis 설정
+  data:
+    redis:
+      # 도커 네트워크 환경을 고려해 호스트명을 환경 변수 처리합니다.
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
+

@@ -7,8 +7,7 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "users") // PostgreSQL에서 user는 예약어이므로 테이블명을 users로 지정
-@Getter
-@Setter
+@Getter @Setter
 @NoArgsConstructor
 public class User {
     

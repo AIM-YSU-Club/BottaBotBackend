@@ -1,11 +1,11 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.3.1' // [수정] 호환성이 검증된 3.3.x 버전으로 변경
-    id 'io.spring.dependency-management' version '1.1.5' // [수정] 부트 버전에 맞게 조정
+    id 'org.springframework.boot' version '4.1.0'
+    id 'io.spring.dependency-management' version '1.1.7'
 }
 
 group = 'club.YSU_AIM'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.1-PRE_ALPHA'
 description = 'BottaBotBackend'
 
 java {
@@ -47,7 +47,10 @@ dependencies {
 //    implementation 'org.springframework.ai:spring-ai-pgvector-store-spring-boot-starter'
 
     // swagger
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.3'
+
+    // Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 }
 
 dependencyManagement {

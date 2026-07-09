@@ -5,9 +5,9 @@ spring:
   # 1. PostgreSQL 데이터소스 설정
   datasource:
     # 도커 네트워크 내부에서는 서비스 이름(예: postgres)으로 접근해야 합니다.
-    url: jdbc:postgresql://localhost:5432/${DB_NAME}
+    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
     driver-class-name: org.postgresql.Driver
-    username: ${DB_USERNAME}
+    username: ${DB_USER}
     password: ${DB_PASSWORD}
 
   # 2. JPA / Hibernate 설정
@@ -25,8 +25,5 @@ spring:
   # 3. Redis 설정
   data:
     redis:
-      # 도커 네트워크 환경을 고려해 호스트명을 환경 변수 처리합니다.
-      host: ${REDIS_HOST}
-      port: ${REDIS_PORT}
-
-
+      url: ${REDIS_URL}
+      password: ${REDIS_PASSWORD}

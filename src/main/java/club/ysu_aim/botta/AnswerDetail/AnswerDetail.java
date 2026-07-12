@@ -1,4 +1,4 @@
-가package club.ysu_aim.botta.AnswerDetail;
+package club.ysu_aim.botta.AnswerDetail;
 
 import club.ysu_aim.botta.Chat.Chat;
 import jakarta.persistence.*;

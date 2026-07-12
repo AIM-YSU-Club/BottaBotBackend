@@ -33,7 +33,7 @@ public class File {
     private String fileName;
 
     /** 저장 경로 */
-    @Column(columnDefinition = "건TEXT")
+    @Column(columnDefinition = "TEXT")
     private String path;
 
     /** 마크다운으로 변환된 원문 */

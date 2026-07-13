@@ -32,4 +32,11 @@ public class Source {
     /** 청크 수 */
     @Column(name = "chunk_count")
     private Integer chunkCount;
+
+    /** 소스 처리 상태 (PENDING / DONE / FAILED) */
+    @Column(
+            nullable = false,
+            columnDefinition = "TEXT DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'DONE', 'FAILED'))"
+    )
+    private String status = "PENDING";
 }

@@ -16,7 +16,7 @@ public class UserRequest {
 
     private String refreshToken;
     private String email;
-    private Long studentId;
+    private String studentId;
 //    private String loginId;
     private String password;
     private String name;
@@ -27,7 +27,7 @@ public class UserRequest {
     public User toEntity() {
         return User.builder()
                 .email(this.email)
-                .classNumber(this.studentId)
+                .studentId(this.studentId)
 //                .loginId(this.loginId)
                 .password(this.password) // 암호화된 비밀번호를 넣어야 함
                 .name(this.name)

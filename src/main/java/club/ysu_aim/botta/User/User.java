@@ -30,8 +30,8 @@ public class User {
     private String email;
 
     /** 해시된 비밀번호 */
-    @Column(name = "hashed_pass", nullable = false, columnDefinition = "TEXT")
-    private String hashedPass;
+    @Column(name = "\"password\"", nullable = false, columnDefinition = "TEXT")
+    private String password;
 
     /** 이름 */
     @Column(nullable = false, columnDefinition = "TEXT")
@@ -45,6 +45,5 @@ public class User {
     @Column(columnDefinition = "TEXT")
     private String nickname;
 
-    @Column(name = "password")
-    private String password;
+
 }

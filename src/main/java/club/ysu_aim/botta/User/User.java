@@ -1,9 +1,7 @@
 package club.ysu_aim.botta.User;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -16,6 +14,9 @@ import java.util.UUID;
 @Table(name = "users")
 @Getter
 @Setter
+@Builder
+@ToString
+@AllArgsConstructor
 @NoArgsConstructor
 public class User {
 
@@ -31,7 +32,10 @@ public class User {
 
     /** 해시된 비밀번호 */
     @Column(name = "hashed_pass", nullable = false, columnDefinition = "TEXT")
-    private String hashedPass;
+    private String password;
+
+//    @Column(name = "hashed_pass", nullable = false, columnDefinition = "TEXT")
+//    private String hashedPass;
 
     /** 이름 */
     @Column(nullable = false, columnDefinition = "TEXT")

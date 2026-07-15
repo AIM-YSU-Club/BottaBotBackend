@@ -11,9 +11,9 @@ services:
             - REDIS_PASSWORD=${REDIS_PASSWORD}
             - REDIS_URL=${REDIS_URL}
 
-        # 호스트 8080 : 컨테이너 8080 (스프링 부트 기본 포트)
+        # 호스트 8000 : 컨테이너 8000 (스프링 부트 기본 포트)
         ports:
-            - "8080:8080"
+            - "${PORT}:8080"
 
         # (주의) 로컬 코드를 덮어씌우는 파이썬식 볼륨 바인딩은 컴파일 언어인 자바와 충돌하므로 제거했습니다.
         restart: always

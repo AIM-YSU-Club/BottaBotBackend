@@ -13,7 +13,7 @@ spring:
   # 2. JPA / Hibernate 설정
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none #update
     properties:
       hibernate:
         show_sql: true
@@ -52,3 +52,9 @@ springdoc:
     # alpha: 알파벳 순 태그 정렬, method: HTTP Method 순 정렬
     tags-sorter: alpha
     operations-sorter: alpha
+
+# 4. JWT 설정
+jwt:
+  secret: your-very-secure-random-secret-key-at-least-32-chars-long
+  expiration: 86400000        # 24시간 (엑세스 토큰)
+  refresh-expiration: 604800000 # 7일 (리프레쉬 토큰)

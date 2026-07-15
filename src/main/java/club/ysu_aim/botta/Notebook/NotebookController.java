@@ -1,11 +1,13 @@
 package club.ysu_aim.botta.Notebook;
 
 
-import club.ysu_aim.botta.Security.CustomUserDetailsService;
+import club.ysu_aim.botta.Security.CustomUserDetails;
 import club.ysu_aim.botta.Notebook.Notebook;
+import club.ysu_aim.botta.Notebook.NotebookService;
 import club.ysu_aim.botta.User.User;
 import club.ysu_aim.botta.User.UserResponse;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -14,45 +16,94 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @Slf4j
-@RestController
-@RequestMapping
 @RequiredArgsConstructor
+@RestController
+@RequestMapping("/notebooks")
 public class NotebookController {
 
-    @PostMapping("/notebooks")
-    public ResponseEntity<NotebookDTO> register (@RequestBody NotebookDTO request, HttpServletResponse servletResponse,@AuthenticationPrincipal CustomUserDetailsService userDetails) {
-        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body("이미 사용 중인 이메일입니다.");
-        }
-        //Entity 변환
-        Notebook newUser = request.toEntity();
-        try {
-            userRepository.save(newUser);
-            UserResponse response = new UserResponse(null,"회원가입이 완료되었습니다.", null);
-            return ResponseEntity.ok(response);
+    private final NotebookService notebookService;
 
-        } catch (Exception e) {
-            // DB 제약조건 위반 등 예외 발생 시 오류뱉음
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("회원가입 중 오류가 발생했습니다.");
-        }
+    /**
+     * POST /notebooks
+     * 노트북 생성
+     */
+    @PostMapping
+    public ResponseEntity<NotebookDTO.CreateResponse> createNotebook(
+            @Valid @RequestBody NotebookDTO.CreateRequest request,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        // Security Context에서 토큰을 통해 인증된 유저 ID를 추출
+        User userId = userDetails.getUserId();
+
+        NotebookDTO.CreateResponse response = notebookService.createNotebook(userId, request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
-    @GetMapping("/notebooks")
-    public ResponseEntity<?> check (@RequestBody NotebookDTO request, HttpServletResponse servletResponse) {
 
+    /**
+     * GET /notebooks
+     * 내 노트북 목록 조회 (최신 수정일 정렬, 페이징, 키워드 검색)
+     */
+    @GetMapping
+    public ResponseEntity<Page<NotebookDto.ListResponse>> getNotebooks(
+            @RequestParam(required = false) String keyword,
+            @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        Long userId = userDetails.getUserId();
+
+        Page<NotebookDto.ListResponse> response = notebookService.getNotebooks(userId, keyword, pageable);
+        return ResponseEntity.ok(response);
     }
-    @GetMapping("/notebooks/{notebookId}")
-    public ResponseEntity<?> detail_check (@DestinationVariable String notebookId, @RequestBody NotebookDTO request, HttpServletResponse servletResponse) {
 
+    /**
+     * GET /notebooks/{notebookId}
+     * 노트북 상세 조회 (소스 요약 리스트 포함)
+     */
+    @GetMapping("/{notebookId}")
+    public ResponseEntity<NotebookDto.DetailResponse> getNotebookDetail(
+            @PathVariable Long notebookId,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        Long userId = userDetails.getUserId();
+
+        NotebookDto.DetailResponse response = notebookService.getNotebookDetail(userId, notebookId);
+        return ResponseEntity.ok(response);
     }
-    @PatchMapping("/notebooks/{notebookId}")
-    public ResponseEntity<?> modify (@DestinationVariable String notebookId, @RequestBody NotebookDTO request, HttpServletResponse servletResponse) {
 
+    /**
+     * PATCH /notebooks/{notebookId}
+     * 노트북 제목/설명 수정
+     */
+    @PatchMapping("/{notebookId}")
+    public ResponseEntity<NotebookDto.DetailResponse> updateNotebook(
+            @PathVariable Long notebookId,
+            @RequestBody NotebookDto.UpdateRequest request,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        Long userId = userDetails.getUserId();
+
+        // 수정된 정보를 반환하도록 DetailResponse 재사용
+        NotebookDto.DetailResponse response = notebookService.updateNotebook(userId, notebookId, request);
+        return ResponseEntity.ok(response);
     }
-    @PatchMapping("/notebooks/{notebookId}")
-    public ResponseEntity<?> delete (@DestinationVariable String notebookId, @RequestBody NotebookDTO request, HttpServletResponse servletResponse) {
 
+    /**
+     * DELETE /notebooks/{notebookId}
+     * 노트북 삭제 (소스, 채팅 기록 전체 함께 삭제)
+     */
+    @DeleteMapping("/{notebookId}")
+    public ResponseEntity<Void> deleteNotebook(
+            @PathVariable Long notebookId,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        Long userId = userDetails.getUserId();
+
+        notebookService.deleteNotebook(userId, notebookId);
+
+        // 명세서 요구사항: 204 No Content 반환
+        return ResponseEntity.noContent().build();
     }
 }

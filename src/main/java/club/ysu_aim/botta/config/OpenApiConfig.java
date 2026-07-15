@@ -7,7 +7,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Swagger springdoc-ui 구성 파일
+ * Swagger springdoc-ui 구성 파일.
+ * 기존의 SwaggerConfig.java 파일이랑 중복으로 이 파일만 사용
  */
 @Configuration
 public class OpenApiConfig {

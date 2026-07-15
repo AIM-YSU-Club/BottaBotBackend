@@ -30,3 +30,8 @@ spring:
       port: ${REDIS_PORT:6379}
 
 
+# 4. JWT 설정
+jwt:
+  secret: your-very-secure-random-secret-key-at-least-32-chars-long
+  expiration: 86400000        # 24시간 (엑세스 토큰)
+  refresh-expiration: 604800000 # 7일 (리프레쉬 토큰)

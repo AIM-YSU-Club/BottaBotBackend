@@ -31,7 +31,7 @@ public class User {
     private String email;
 
     /** 해시된 비밀번호 */
-    @Column(name = "pass", nullable = false, columnDefinition = "TEXT")
+    @Column(name = "hashed_pass", nullable = false, columnDefinition = "TEXT")
     private String password;
 
 //    @Column(name = "hashed_pass", nullable = false, columnDefinition = "TEXT")

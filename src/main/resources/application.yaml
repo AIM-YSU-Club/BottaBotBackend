@@ -13,7 +13,7 @@ spring:
   # 2. JPA / Hibernate 설정
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: none #update
     properties:
       hibernate:
         show_sql: true

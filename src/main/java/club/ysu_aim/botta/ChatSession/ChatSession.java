@@ -1,7 +1,6 @@
 package club.ysu_aim.botta.ChatSession;
 
 import club.ysu_aim.botta.Notebook.Notebook;
-import club.ysu_aim.botta.User.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,6 +11,7 @@ import java.util.UUID;
 
 /**
  * 대화 세션(대화창). 노트북 단위로 여러 세션을 가질 수 있다.
+ * 소유 사용자는 notebook → user 경로로 식별한다.
  */
 @Entity
 @Getter
@@ -24,11 +24,6 @@ public class ChatSession {
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "chat_session_id", nullable = false, updatable = false)
     private UUID chatSessionId;
-
-    /** 세션 소유 사용자 */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
 
     /** 소속 노트북 */
     @ManyToOne(fetch = FetchType.LAZY)

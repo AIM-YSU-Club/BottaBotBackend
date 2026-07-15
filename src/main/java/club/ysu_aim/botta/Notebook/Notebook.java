@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.Instant;
 import java.util.UUID;
 
 /**
@@ -31,4 +32,9 @@ public class Notebook {
     /** 노트북 제목 */
     @Column(name = "notebook_name", columnDefinition = "TEXT")
     private String notebookName;
+
+    /** 생성 시각 */
+    @Column(name = "created_at", nullable = false, updatable = false,
+            columnDefinition = "TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP")
+    private Instant createdAt = Instant.now();
 }

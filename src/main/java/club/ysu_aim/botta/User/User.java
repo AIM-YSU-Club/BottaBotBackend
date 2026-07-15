@@ -3,6 +3,7 @@ package club.ysu_aim.botta.User;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.Instant;
 import java.util.UUID;
 
 /**
@@ -10,7 +11,7 @@ import java.util.UUID;
  * PostgreSQL 예약어 충돌을 피하기 위해 테이블명은 users.
  */
 @Entity
-@Table(name = "users") // PostgreSQL에서 user는 예약어이므로 테이블명을 users로 지정
+@Table(name = "users")
 @Getter
 @Setter
 @Builder
@@ -30,8 +31,11 @@ public class User {
     private String email;
 
     /** 해시된 비밀번호 */
-    @Column(name = "\"password\"", nullable = false, columnDefinition = "TEXT")
+    @Column(name = "pass", nullable = false, columnDefinition = "TEXT")
     private String password;
+
+//    @Column(name = "hashed_pass", nullable = false, columnDefinition = "TEXT")
+//    private String hashedPass;
 
     /** 이름 */
     @Column(nullable = false, columnDefinition = "TEXT")
@@ -45,5 +49,17 @@ public class User {
     @Column(columnDefinition = "TEXT")
     private String nickname;
 
+    /** 이메일 인증 완료 여부 */
+    @Column(name = "email_verified", nullable = false,
+            columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private Boolean emailVerified = false;
 
+    /** 이메일 인증 완료 시각 */
+    @Column(name = "email_verified_at", columnDefinition = "TIMESTAMPTZ")
+    private Instant emailVerifiedAt;
+
+    /** 생성 시각 */
+    @Column(name = "created_at", nullable = false, updatable = false,
+            columnDefinition = "TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP")
+    private Instant createdAt = Instant.now();
 }

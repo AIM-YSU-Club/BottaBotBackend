@@ -45,6 +45,15 @@ public class User {
     @Column(columnDefinition = "TEXT")
     private String nickname;
 
+    /** 이메일 인증 완료 여부 */
+    @Column(name = "email_verified", nullable = false,
+            columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private Boolean emailVerified = false;
+
+    /** 이메일 인증 완료 시각 */
+    @Column(name = "email_verified_at", columnDefinition = "TIMESTAMPTZ")
+    private Instant emailVerifiedAt;
+
     /** 생성 시각 */
     @Column(name = "created_at", nullable = false, updatable = false,
             columnDefinition = "TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP")

@@ -40,3 +40,5 @@ out/
 ### ETC ###
 db_data
 .env
+
+src/main/resources/application-dev.yaml

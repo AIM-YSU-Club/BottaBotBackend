@@ -5,10 +5,10 @@ spring:
   # 1. PostgreSQL 데이터소스 설정
   datasource:
     # 도커 네트워크 내부에서는 서비스 이름(예: postgres)으로 접근해야 합니다.
-    url: jdbc:postgresql://localhost:5432/${DB_NAME:bottadb}
+    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
     driver-class-name: org.postgresql.Driver
-    username: ${DB_USERNAME:botta}
-    password: ${DB_PASSWORD:botta@2026}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
 
   # 2. JPA / Hibernate 설정
   jpa:
@@ -25,10 +25,33 @@ spring:
   # 3. Redis 설정
   data:
     redis:
-      # 도커 네트워크 환경을 고려해 호스트명을 환경 변수 처리합니다.
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
+      url: ${REDIS_URL}
+      password: ${REDIS_PASSWORD}
 
+# 4. Swagger UI Configuation
+springdoc:
+  packages-to-scan: club.ysu_aim.botta
+  default-consumes-media-type: application/json;charset=UTF-8
+  default-produces-media-type: application/json;charset=UTF-8
+
+  # 캐시 사용 여부
+  cache:
+    disabled: true
+  api-docs:
+    path: /api-docs/json
+    groups:
+      enabled: true
+  swagger-ui:
+
+    # Swagger UI 사용여부 : 접근 경로 => <http://localhost:8080/swagger-ui/index.html>
+    enabled: true
+
+    # Swagger UI 추가 접근 경로 => <http://localhost:8080/demo-ui.html>
+    path: /demo-ui.html
+
+    # alpha: 알파벳 순 태그 정렬, method: HTTP Method 순 정렬
+    tags-sorter: alpha
+    operations-sorter: alpha
 
 # 4. JWT 설정
 jwt:

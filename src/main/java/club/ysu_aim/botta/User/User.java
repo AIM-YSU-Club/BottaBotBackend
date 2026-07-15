@@ -3,6 +3,12 @@ package club.ysu_aim.botta.User;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.UUID;
+
+/**
+ * 사용자 계정.
+ * PostgreSQL 예약어 충돌을 피하기 위해 테이블명은 users.
+ */
 @Entity
 @Table(name = "users") // PostgreSQL에서 user는 예약어이므로 테이블명을 users로 지정
 @Getter
@@ -12,28 +18,33 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class User {
-    
+
+    /** 로그인 ID */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
-    private Long userId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "user_id", nullable = false, updatable = false)
+    private UUID userId;
 
-    @Column(nullable = false)
-    private Long classNumber;
-
-//    @Column(nullable = false)
-//    private String loginId;
-    
-    @Column(nullable = false)
+    /** 로그인 이메일 */
+    @Column(nullable = false, unique = true, columnDefinition = "TEXT")
     private String email;
-    
-    @Column(name = "password")
-    private String password;
 
-    @Column(nullable = false)
+    /** 해시된 비밀번호 */
+    @Column(name = "hashed_pass", nullable = false, columnDefinition = "TEXT")
+    private String hashedPass;
+
+    /** 이름 */
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String name;
 
-    @Column(nullable = false)
+    /** 학번 */
+    @Column(name = "student_id", unique = true, columnDefinition = "TEXT")
+    private String studentId;
+
+    /** 별명 */
+    @Column(columnDefinition = "TEXT")
     private String nickname;
 
+    @Column(name = "password")
+    private String password;
 }

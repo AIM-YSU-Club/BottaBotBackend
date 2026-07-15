@@ -2,9 +2,7 @@ package club.ysu_aim.botta.Notebook;
 
 import club.ysu_aim.botta.User.User;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -13,6 +11,9 @@ import java.util.UUID;
  * 노트북 — RAG 챗봇의 기본 단위(지식베이스/프로젝트).
  */
 @Entity
+@Builder
+@AllArgsConstructor
+@ToString
 @Getter
 @Setter
 @NoArgsConstructor
@@ -30,8 +31,11 @@ public class Notebook {
     private User user;
 
     /** 노트북 제목 */
-    @Column(name = "notebook_name", columnDefinition = "TEXT")
-    private String notebookName;
+    @Column(name = "title", nullable = false, columnDefinition = "TEXT")
+    private String title;
+
+    @Column(name = "description", columnDefinition = "TEXT")
+    private String description;
 
     /** 생성 시각 */
     @Column(name = "created_at", nullable = false, updatable = false,

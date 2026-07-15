@@ -6,11 +6,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.Instant;
 import java.util.UUID;
 
 /**
  * 소스 — RAG에 올린 원본(파일·웹페이지·이미지 등)의 메타데이터.
- * 하나의 Source는 여러 Document(청크)로 쪼개진다.
  */
 @Entity
 @Getter
@@ -39,4 +39,9 @@ public class Source {
             columnDefinition = "TEXT DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'DONE', 'FAILED'))"
     )
     private String status = "PENDING";
+
+    /** 생성 시각 */
+    @Column(name = "created_at", nullable = false, updatable = false,
+            columnDefinition = "TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP")
+    private Instant createdAt = Instant.now();
 }

@@ -18,7 +18,7 @@ public class UserRequest {
     private String email;
     private String studentId;
 //    private String loginId;
-    private String password;
+    private String hashedPass;
     private String name;
     private String nickname;
     //이미지 저장용 변수
@@ -29,7 +29,7 @@ public class UserRequest {
                 .email(this.email)
                 .studentId(this.studentId)
 //                .loginId(this.loginId)
-                .password(this.password) // 암호화된 비밀번호를 넣어야 함
+                .hashedPass(this.hashedPass) // 암호화된 비밀번호를 넣어야 함
                 .name(this.name)
                 .nickname(this.nickname)
                 .build();

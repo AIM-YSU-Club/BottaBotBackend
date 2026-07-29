@@ -8,6 +8,8 @@ import lombok.Setter;
 
 import java.time.Instant;
 import java.util.UUID;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * 소스 — RAG에 올린 원본(파일·웹페이지·이미지 등)의 메타데이터.
@@ -44,4 +46,8 @@ public class Source {
     @Column(name = "created_at", nullable = false, updatable = false,
             columnDefinition = "TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP")
     private Instant createdAt = Instant.now();
+
+    /** 연결된 파일 목록 */
+    @OneToMany(mappedBy = "source", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<club.ysu_aim.botta.File.File> files = new ArrayList<>();
 }

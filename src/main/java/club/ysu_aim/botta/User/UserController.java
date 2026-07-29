@@ -70,7 +70,7 @@ private long refreshTokenExpirationTime;
         // LoginId를 통해 DB에 등록된 유저인지 확인
         return userRepository.findByEmail(request.getEmail())
                 .map(user -> {
-                    if (user.getPassword().equals(request.getPassword())) {
+                    if (user.getHashedPass().equals(request.getHashedPass())) {
 
                         // 로그인 성공 시 토큰 생성
                         String token = jwtTokenProvider.generateToken(user.getEmail());

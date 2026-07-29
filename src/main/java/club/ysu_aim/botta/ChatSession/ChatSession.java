@@ -8,6 +8,8 @@ import lombok.Setter;
 
 import java.time.Instant;
 import java.util.UUID;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * 대화 세션(대화창). 노트북 단위로 여러 세션을 가질 수 있다.
@@ -38,4 +40,8 @@ public class ChatSession {
     @Column(name = "created_at", nullable = false, updatable = false,
             columnDefinition = "TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP")
     private Instant createdAt = Instant.now();
+
+    /** 대화 목록 */
+    @OneToMany(mappedBy = "chatSession", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<club.ysu_aim.botta.Chat.Chat> chats = new ArrayList<>();
 }

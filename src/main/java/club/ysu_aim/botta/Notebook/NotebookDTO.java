@@ -1,6 +1,7 @@
 package club.ysu_aim.botta.Notebook;
 
 import club.ysu_aim.botta.Notebook.Notebook;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.util.List;
@@ -12,10 +13,10 @@ public class NotebookDTO {
 
     // 노트북 생성 요청
     @Getter
+    @NotBlank
     @NoArgsConstructor
     public static class CreateRequest {
         private String title;
-
         private String description;
     }
 

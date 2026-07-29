@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor // 변수 주입을 위한 생성자 자동 선언 (생성자 주입!)
+@RequiredArgsConstructor
 public class RedisService {
 
     // 스프링이 제공하는 가장 편리한 Redis 조작 부품입니다. (Key, Value 모두 문자열로 처리)

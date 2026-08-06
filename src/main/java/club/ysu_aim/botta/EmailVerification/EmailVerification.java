@@ -35,15 +35,13 @@ public class EmailVerification {
      * 토큰 용도.
      * VERIFY_EMAIL: 이메일 인증, RESET_PASSWORD: 비밀번호 재설정
      */
-    @Column(
-            nullable = false,
-            columnDefinition = "TEXT CHECK (purpose IN ('VERIFY_EMAIL', 'RESET_PASSWORD'))"
-    )
-    private String purpose;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private EmailVerificationPurpose purpose;
 
-    /** 토큰 값(원문 대신 해시 저장 권장) */
-    @Column(nullable = false, unique = true, columnDefinition = "TEXT")
-    private String token;
+    /** 원문 토큰의 SHA-256 해시. 기존 DB 컬럼명과의 호환을 위해 token 컬럼을 사용한다. */
+    @Column(name = "token", nullable = false, unique = true, columnDefinition = "TEXT")
+    private String tokenHash;
 
     /** 만료 시각 */
     @Column(name = "expires_at", nullable = false, columnDefinition = "TIMESTAMPTZ")
@@ -57,4 +55,21 @@ public class EmailVerification {
     @Column(name = "created_at", nullable = false, updatable = false,
             columnDefinition = "TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP")
     private Instant createdAt = Instant.now();
+
+    public EmailVerification(User user, EmailVerificationPurpose purpose, String tokenHash,
+                             Instant expiresAt, Instant createdAt) {
+        this.user = user;
+        this.purpose = purpose;
+        this.tokenHash = tokenHash;
+        this.expiresAt = expiresAt;
+        this.createdAt = createdAt;
+    }
+
+    public boolean isExpired(Instant now) {
+        return !expiresAt.isAfter(now);
+    }
+
+    public boolean isUsed() {
+        return usedAt != null;
+    }
 }

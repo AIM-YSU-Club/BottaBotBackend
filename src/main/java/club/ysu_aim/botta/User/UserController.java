@@ -1,5 +1,6 @@
 package club.ysu_aim.botta.User;
 
+import club.ysu_aim.botta.common.ApiEnvelope;
 import club.ysu_aim.botta.User.UserService;
 import club.ysu_aim.botta.User.UserResponse;
 import club.ysu_aim.botta.User.UserRequest;
@@ -12,6 +13,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,8 +34,9 @@ import java.util.List;
 import java.util.UUID;
 
 @Slf4j //로그찍기
+@Tag(name = "회원/인증", description = "회원가입, 로그인 및 JWT 관리 API")
 @RestController
-@RequestMapping
+@RequestMapping("/api/v1")
 @RequiredArgsConstructor // 아래 final변수 두개 생성자 자동주입
 public class UserController {
 
@@ -35,42 +44,85 @@ public class UserController {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserService userService;
     private final RedisService redisService;
+    private final PasswordEncoder passwordEncoder;
 
 @Value("${jwt.refresh-expiration-time:1209600000}")
 private long refreshTokenExpirationTime;
 
 
 
-    // 회원가입 컨트롤러
+    /**
+     * 자체 회원가입을 처리하고 이메일 인증에 사용할 토큰을 함께 발급한다.
+     * 실제 인증 메일 발송 구현은 제외되어 응답의 verificationEmailSent는 false다.
+     *
+     * @param request 회원가입 요청 정보
+     * @return 생성된 회원 식별자와 인증 메일 발송 여부
+     */
+    @Operation(
+            summary = "자체 회원가입",
+            description = "회원 정보를 저장하고 이메일 인증 토큰을 발급합니다. 생성된 memberId와 인증 메일 발송 여부를 반환합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "회원가입 성공"),
+            @ApiResponse(responseCode = "400", description = "필수 회원 정보 누락",
+                    content = @Content(schema = @Schema(implementation = ApiEnvelope.class))),
+            @ApiResponse(responseCode = "409", description = "이미 사용 중인 이메일",
+                    content = @Content(schema = @Schema(implementation = ApiEnvelope.class))),
+            @ApiResponse(responseCode = "500", description = "회원가입 처리 실패",
+                    content = @Content(schema = @Schema(implementation = ApiEnvelope.class)))
+    })
     @PostMapping("/members")
-    public ResponseEntity<?> join   (@RequestBody UserRequest request) {
-        //중복검사
-        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body("이미 사용 중인 이메일입니다.");
+    public ResponseEntity<ApiEnvelope<RegistrationResponse>> join(@RequestBody UserRequest request) {
+        if (request.getEmail() == null || request.getEmail().isBlank()
+                || request.getPassword() == null || request.getPassword().isBlank()) {
+            return ResponseEntity.badRequest()
+                    .body(ApiEnvelope.failure("INVALID_REQUEST", "이메일과 비밀번호는 필수입니다."));
         }
-        //Entity 변환
-        User newUser = request.toEntity();
+        String normalizedEmail = request.getEmail().trim().toLowerCase();
+        request.setEmail(normalizedEmail);
+        //중복검사
+        if (userRepository.findByEmail(normalizedEmail).isPresent()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(ApiEnvelope.failure("DUPLICATE_EMAIL", "이미 사용 중인 이메일입니다."));
+        }
         try {
-            userRepository.save(newUser);
-            UserResponse response = new UserResponse(null,"회원가입이 완료되었습니다.", null);
-            return ResponseEntity.ok(response);
+            User registeredUser = userService.register(request);
+            return ResponseEntity.ok(ApiEnvelope.success(
+                    new RegistrationResponse(registeredUser.getUserId(), false)));
 
         } catch (Exception e) {
-            // DB 제약조건 위반 등 예외 발생 시 오류뱉음
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("회원가입 중 오류가 발생했습니다.");
+                    .body(ApiEnvelope.failure("INTERNAL_ERROR", "회원가입 중 오류가 발생했습니다."));
         }
     }
 
-    // 로그인 컨트롤러
+    /**
+     * 이메일과 비밀번호를 검증하고 이메일 인증 회원에게만 JWT를 발급한다.
+     *
+     * @param request 로그인 이메일과 비밀번호
+     * @param servletResponse Refresh Token 쿠키를 기록할 HTTP 응답
+     * @return Access Token 및 로그인 결과
+     */
+    @Operation(
+            summary = "이메일 로그인",
+            description = "이메일과 비밀번호를 검증하고 이메일 인증이 완료된 회원에게 Access/Refresh Token을 발급합니다.")
     @PostMapping("/auth/login")
     public ResponseEntity<?> login(@RequestBody UserRequest request, HttpServletResponse servletResponse) {
 
+        if (request.getEmail() == null || request.getPassword() == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("아이디 혹은 비밀번호가 틀렸습니다.");
+        }
+        String normalizedEmail = request.getEmail().trim().toLowerCase();
+
         // LoginId를 통해 DB에 등록된 유저인지 확인
-        return userRepository.findByEmail(request.getEmail())
+        return userRepository.findByEmail(normalizedEmail)
                 .map(user -> {
-                    if (user.getHashedPass().equals(request.getHashedPass())) {
+                    if (passwordEncoder.matches(request.getPassword(), user.getHashedPass())) {
+
+                        if (!Boolean.TRUE.equals(user.getEmailVerified())) {
+                            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                                    .body("EMAIL_NOT_VERIFIED: 이메일 인증이 필요합니다.");
+                        }
 
                         // 로그인 성공 시 토큰 생성
                         String token = jwtTokenProvider.generateToken(user.getEmail());

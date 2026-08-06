@@ -38,6 +38,7 @@ out/
 
 
 ### ETC ###
+.DS_Store
 db_data
 .env
 

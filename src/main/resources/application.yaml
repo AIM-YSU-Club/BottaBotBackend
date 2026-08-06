@@ -58,3 +58,9 @@ jwt:
   secret: your-very-secure-random-secret-key-at-least-32-chars-long
   expiration: 86400000        # 24시간 (엑세스 토큰)
   refresh-expiration: 604800000 # 7일 (리프레쉬 토큰)
+
+# 실제 메일 발송 구현과 독립적인 이메일 인증 정책
+email-verification:
+  expiration-minutes: 30
+  resend-cooldown-seconds: 60
+  daily-limit: 5

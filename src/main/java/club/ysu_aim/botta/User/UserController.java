@@ -117,7 +117,7 @@ private long refreshTokenExpirationTime;
         // LoginId를 통해 DB에 등록된 유저인지 확인
         return userRepository.findByEmail(normalizedEmail)
                 .map(user -> {
-                    if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+                    if (passwordEncoder.matches(request.getPassword(), user.getHashedPass())) {
 
                         if (!Boolean.TRUE.equals(user.getEmailVerified())) {
                             return ResponseEntity.status(HttpStatus.FORBIDDEN)

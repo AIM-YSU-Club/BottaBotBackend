@@ -52,7 +52,7 @@ class EmailVerficationServiceTest {
         user = User.builder()
                 .userId(UUID.randomUUID())
                 .email("member@example.com")
-                .password("encoded-password")
+                .hashedPass("encoded-password")
                 .name("member")
                 .emailVerified(false)
                 .build();

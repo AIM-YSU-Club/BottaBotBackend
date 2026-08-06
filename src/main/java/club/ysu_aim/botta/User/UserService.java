@@ -28,7 +28,7 @@ public class UserService {
     public User register(UserRequest request) {
         User user = request.toEntity();
         user.setEmail(request.getEmail().trim().toLowerCase());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setHashedPass(passwordEncoder.encode(request.getPassword()));
         user.setEmailVerified(false);
         User savedUser = userRepository.save(user);
         emailVerificationService.issueForNewUser(savedUser);

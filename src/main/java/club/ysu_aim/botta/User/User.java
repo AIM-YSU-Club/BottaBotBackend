@@ -2,6 +2,7 @@ package club.ysu_aim.botta.User;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicInsert;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -18,6 +19,7 @@ import java.util.UUID;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
+@DynamicInsert // null인 필드는 INSERT쿼리에서 제외 => DB의 DEFAULT규칙을 따름
 public class User {
 
     /** 로그인 ID */
@@ -32,10 +34,7 @@ public class User {
 
     /** 해시된 비밀번호 */
     @Column(name = "hashed_pass", nullable = false, columnDefinition = "TEXT")
-    private String password;
-
-//    @Column(name = "hashed_pass", nullable = false, columnDefinition = "TEXT")
-//    private String hashedPass;
+    private String hashedPass;
 
     /** 이름 */
     @Column(nullable = false, columnDefinition = "TEXT")

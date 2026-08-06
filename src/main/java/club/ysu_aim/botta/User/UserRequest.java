@@ -43,7 +43,6 @@ public class UserRequest {
                 .email(this.email)
                 .studentId(this.studentId)
 //                .loginId(this.loginId)
-                .password(this.password) // 암호화된 비밀번호를 넣어야 함
                 .name(this.name)
                 .nickname(this.nickname)
                 .build();

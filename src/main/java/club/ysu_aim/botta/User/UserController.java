@@ -125,7 +125,7 @@ private long refreshTokenExpirationTime;
                         }
 
                         // 로그인 성공 시 토큰 생성
-                        String token = jwtTokenProvider.generateToken(user.getEmail());
+                        String accessToken = jwtTokenProvider.generateToken(user.getEmail());
                         String refreshToken = jwtTokenProvider.generateRefreshToken(user.getEmail());
                         redisService.setRefreshToken(user.getEmail(), refreshToken, refreshTokenExpirationTime);
 
@@ -141,7 +141,7 @@ private long refreshTokenExpirationTime;
                         servletResponse.addCookie(refreshCookie); //브라우저에게 보내는 HTTP 응답 메시지의 헤더에 Set-Cookie라는 특수한 한 줄을 추가
 
 
-                        UserResponse response = new UserResponse(token,"로그인 성공", user.getEmail());
+                        UserResponse response = new UserResponse(accessToken, "로그인 성공", user.getEmail());
                         log.info("로그인 응답 데이터: {}", response.toString());
                         return ResponseEntity.ok(response);
                     } else {

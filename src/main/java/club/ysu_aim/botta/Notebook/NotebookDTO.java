@@ -13,9 +13,9 @@ public class NotebookDTO {
 
     // 노트북 생성 요청
     @Getter
-    @NotBlank
     @NoArgsConstructor
     public static class CreateRequest {
+        @NotBlank
         private String title;
         private String description;
     }

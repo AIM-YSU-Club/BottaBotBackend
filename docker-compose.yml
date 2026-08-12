@@ -20,6 +20,23 @@ services:
 
     cloudflared:
         image: cloudflare/cloudflared:latest
+        container_name: bottabot_cloudflared
         command: tunnel --no-autoupdate --url http://127.0.0.1:${PORT}
         network_mode: host
         restart: unless-stopped
+
+    # Temporary one-shot: read Quick Tunnel URL from cloudflared logs → Discord webhook
+    tunnel-notify:
+        image: docker:cli
+        container_name: bottabot_tunnel_notify
+        depends_on:
+            - cloudflared
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - ./scripts/notify-quick-tunnel.sh:/notify-quick-tunnel.sh:ro
+        environment:
+            - DISCORD_WEBHOOK_URL=${DISCORD_WEBHOOK_URL}
+            - CLOUDFLARED_CONTAINER=bottabot_cloudflared
+            - NOTIFY_MAX_WAIT_SEC=${NOTIFY_MAX_WAIT_SEC:-90}
+        entrypoint: ["/bin/sh", "/notify-quick-tunnel.sh"]
+        restart: "no"

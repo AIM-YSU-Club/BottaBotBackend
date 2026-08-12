@@ -17,9 +17,3 @@ services:
 
         # (주의) 로컬 코드를 덮어씌우는 파이썬식 볼륨 바인딩은 컴파일 언어인 자바와 충돌하므로 제거했습니다.
         restart: always
-
-    cloudflared:
-        image: cloudflare/cloudflared:latest
-        command: tunnel --no-autoupdate --url http://127.0.0.1:${PORT}
-        network_mode: host
-        restart: unless-stopped

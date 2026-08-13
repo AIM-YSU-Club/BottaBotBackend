@@ -45,7 +45,7 @@ public class SecurityConfig {
             )
             .authorizeHttpRequests(auth -> auth /* 어떤 주소로 들어오는 요청을 허용하거나 막을지 정함 */
                     .requestMatchers("/", "/*.html", "/assets/**", "/favicon.ico", "/static/**", "/*.png", "/*.jpg", "/*.jpeg", "/*.gif", "/*.onnx", "/*.txt").permitAll()
-                    .requestMatchers("/**").permitAll()
+                    .requestMatchers(/*"/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**","/api-docs/**", "/swagger-resources/**", "/webjars/**"*/"/**").permitAll()
                 .anyRequest().authenticated() /* 그 외 모든 페이지 요청은 인증 필요 */
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); /* 아이디/비번을 치기 전에 이미 토큰을 들고 온 사람인지 먼저 확인해서, 인증이 됐다면 바로 통과시켜주기 위한 코드 */

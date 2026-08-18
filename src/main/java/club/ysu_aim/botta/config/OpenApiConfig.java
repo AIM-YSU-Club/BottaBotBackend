@@ -34,7 +34,7 @@ public class OpenApiConfig {
         return new OpenAPI()
                 .addServersItem(new Server().url("/"))
                 .addSecurityItem(securityRequirement)
-                .components(new Components())
+                .components(components)
                 .info(info);
     }
 }

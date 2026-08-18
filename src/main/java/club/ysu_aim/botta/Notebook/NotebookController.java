@@ -18,7 +18,8 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/notebooks")
+// @RequestMapping("/api/v1/notebooks")
+@RequestMapping("/api/v1/notebooks")
 public class NotebookController {
 
     private final NotebookService notebookService;

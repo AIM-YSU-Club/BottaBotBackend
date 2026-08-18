@@ -110,7 +110,7 @@ private long refreshTokenExpirationTime;
 
         if (request.getEmail() == null || request.getPassword() == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("아이디 혹은 비밀번호가 틀렸습니다.");
+                    .body(ApiEnvelope.failure("INVALID_CREDENTIALS", "아이디 혹은 비밀번호가 틀렸습니다."));
         }
         String normalizedEmail = request.getEmail().trim().toLowerCase();
 
@@ -121,7 +121,7 @@ private long refreshTokenExpirationTime;
 
                         if (!Boolean.TRUE.equals(user.getEmailVerified())) {
                             return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                                    .body("EMAIL_NOT_VERIFIED: 이메일 인증이 필요합니다.");
+                                    .body(ApiEnvelope.failure("EMAIL_NOT_VERIFIED", "이메일 인증이 필요합니다."));
                         }
 
                         // 로그인 성공 시 토큰 생성
@@ -145,10 +145,12 @@ private long refreshTokenExpirationTime;
                         log.info("로그인 응답 데이터: {}", response.toString());
                         return ResponseEntity.ok(response);
                     } else {
-                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("아이디 혹은 비밀번호가 틀렸습니다.");
+                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                                .body(ApiEnvelope.failure("INVALID_CREDENTIALS", "아이디 혹은 비밀번호가 틀렸습니다."));
                     }
                 })
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("존재하지 않는 사용자입니다."));
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(ApiEnvelope.failure("USER_NOT_FOUND", "존재하지 않는 사용자입니다.")));
     }
     @PostMapping("/auth/logout")
     public ResponseEntity<?> logout(@CookieValue(name = "refreshToken", required = false) String refreshToken,

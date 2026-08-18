@@ -32,6 +32,7 @@ public class NotebookDTO {
     @Getter
     @Builder
     public static class ListResponse {
+        private UUID notebookId;
         private String title;
         private int sourceCount;
         private Instant updatedAt;

@@ -418,8 +418,8 @@
       "YnZIHFO_L844JJ2QS0JnR": {
         "id": "YnZIHFO_L844JJ2QS0JnR",
         "tableId": "B_5uJ1moGf0GZXQcmOsuC",
-        "name": "notebook_id",
-        "comment": "노트북 ID",
+        "name": "source_id",
+        "comment": "소스 ID",
         "dataType": "",
         "default": "",
         "options": 8,
@@ -1343,9 +1343,9 @@
         "relationshipType": 4,
         "startRelationshipType": 2,
         "start": {
-          "tableId": "b68mCczWPmRRmyhEcL5m6",
+          "tableId": "6FI2AXSgLTIIR-eSlDSX4",
           "columnIds": [
-            "isuXYnMtTFI87DiekA3ze"
+            "ATvKdapZuwEYOgQ2kXRxT"
           ],
           "x": 203.4447,
           "y": 508.2675,

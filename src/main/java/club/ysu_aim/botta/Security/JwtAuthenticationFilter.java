@@ -59,6 +59,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                         SecurityContextHolder.getContext().setAuthentication(authentication);
                     }
+                } else if (isPublicAuthRequest(request)) {
+                    // 로그인/회원가입 등은 Authorization에 만료 토큰이 남아 있어도 통과
+                    log.warn("JwtAuthenticationFilter - Ignoring invalid token on public auth URI: {}", request.getRequestURI());
+                    SecurityContextHolder.clearContext();
                 } else {
                     log.warn("JwtAuthenticationFilter - Invalid token provided for URI: {}", request.getRequestURI());
 
@@ -74,6 +78,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response); //"나는 내 할 일을 다 했으니, 다음 필터에게 넘겨라"는 뜻
+    }
+
+    /** 비로그인으로 호출되는 인증/회원 진입 API */
+    private boolean isPublicAuthRequest(HttpServletRequest request) {
+        String uri = request.getRequestURI();
+        String method = request.getMethod();
+        if (uri == null) {
+            return false;
+        }
+        if ("POST".equalsIgnoreCase(method) && (
+                "/api/v1/auth/login".equals(uri)
+                        || "/api/v1/auth/refresh".equals(uri)
+                        || "/api/v1/auth/logout".equals(uri)
+                        || "/api/v1/members".equals(uri))) {
+            return true;
+        }
+        return uri.startsWith("/api/v1/members/email-verification");
     }
 
     private String getJwtFromRequest(HttpServletRequest request) {

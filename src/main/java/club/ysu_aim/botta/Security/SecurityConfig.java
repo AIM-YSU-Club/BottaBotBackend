@@ -4,6 +4,7 @@ package club.ysu_aim.botta.Security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -44,6 +45,8 @@ public class SecurityConfig {
                 })
             )
             .authorizeHttpRequests(auth -> auth /* 어떤 주소로 들어오는 요청을 허용하거나 막을지 정함 */
+                    // OPTIONS 메소드는 로그인 없이 통과시킴.
+                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                     .requestMatchers("/", "/*.html", "/assets/**", "/favicon.ico", "/static/**", "/*.png", "/*.jpg", "/*.jpeg", "/*.gif", "/*.onnx", "/*.txt").permitAll()
                     .requestMatchers(/*"/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**","/api-docs/**", "/swagger-resources/**", "/webjars/**"*/"/**").permitAll()
                 .anyRequest().authenticated() /* 그 외 모든 페이지 요청은 인증 필요 */
@@ -59,7 +62,7 @@ public class SecurityConfig {
         configuration.setAllowedOriginPatterns(List.of(
                 "http://localhost:3000", "http://localhost:5173", "http://localhost:8080", "https://*.trycloudflare.com"
         ));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*")); // 모든 헤더 수용
         configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

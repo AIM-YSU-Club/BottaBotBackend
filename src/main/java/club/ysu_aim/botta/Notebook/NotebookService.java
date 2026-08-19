@@ -99,6 +99,6 @@ public class NotebookService {
         if (!notebook.getUser().getUserId().equals(userId)) {
             throw new AccessDeniedException("해당 노트북에 접근할 권한이 없습니다.");
         }
-        return notebook;서
+        return notebook;
     }
 }

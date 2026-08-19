@@ -45,6 +45,7 @@ public class NotebookService {
                 notebookRepository.findByUser_UserIdAndTitleContaining(userId, keyword, pageable);
 
         return notebooks.map(notebook -> NotebookDTO.ListResponse.builder()
+                .notebookId(notebook.getNotebookId())
                 .title(notebook.getTitle())
                 .sourceCount(notebook.getSources().size())
                 .updatedAt(notebook.getUpdatedAt())

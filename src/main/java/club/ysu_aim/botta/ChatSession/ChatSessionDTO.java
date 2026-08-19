@@ -1,66 +1,48 @@
-package club.ysu_aim.botta.Notebook;
+package club.ysu_aim.botta.ChatSession;
 
-import club.ysu_aim.botta.Notebook.Notebook;
 import jakarta.validation.constraints.NotBlank;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
-import java.time.Instant;
 
 
-public class NotebookDTO {
+public class ChatSessionDTO {
 
     // 노트북 생성 요청
     @Getter
     @NoArgsConstructor
-    public static class CreateRequest {
-        @NotBlank
-        private String title;
-        private String description;
+    public static class SessionRequest {
+        private UUID notebookId;
     }
 
     // 노트북 생성 응답
     @Getter
     @Builder
     public static class CreateResponse {
-        private UUID notebookId;
+        private UUID SessionId;
+        private Instant createdAt;
+    }
+    @Getter
+    @Builder
+    public static class SearchResponse {
+        private String Tilte;
+        private String content;
         private Instant createdAt;
     }
 
-    // 노트북 목록 조회 응답 (페이징)
-    @Getter
-    @Builder
-    public static class ListResponse {
-        private String title;
-        private int sourceCount;
-        private Instant updatedAt;
-    }
 
-    // 노트북 상세 조회 응답
-    @Getter
-    @Builder
-    public static class DetailResponse {
-        private UUID notebookId;
-        private String title;
-        private String description;
-        private Instant createdAt;
-        private Instant updatedAt;
-        private List<SourceSummaryDto> sources;
-    }
-
-    // 노트북 수정 요청
-    @Getter
-    @NoArgsConstructor
-    public static class UpdateRequest {
-        private String title;
-        private String description;
-    }
 
     @Getter
     @Builder
-    public static class SourceSummaryDto {
-        private UUID sourceId;
-        private String sourceName;
+    public static class DeleteSession {
+        private UUID sessionId;
     }
+
+
+
+
 }

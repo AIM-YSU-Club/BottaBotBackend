@@ -102,7 +102,8 @@ public class NotebookController {
         return ResponseEntity.noContent().build();
     }
 
-//    @PostMapping("/notebooks/{notebookId}/chat-sessions")
-//
-//    @GetMapping("/notebooks/{notebookId}/chat-sessions")
+    @PostMapping("/notebooks/{notebookId}/chat-sessions")
+    public
+
+    @GetMapping("/notebooks/{notebookId}/chat-sessions")
 }

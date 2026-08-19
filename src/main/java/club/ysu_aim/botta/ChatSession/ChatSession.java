@@ -41,7 +41,12 @@ public class ChatSession {
             columnDefinition = "TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP")
     private Instant createdAt = Instant.now();
 
+    @Column(name = "updated_at", nullable = false,
+            columnDefinition = "TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP")
+    private Instant updatedAt = Instant.now();
+
     /** 대화 목록 */
     @OneToMany(mappedBy = "chatSession", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<club.ysu_aim.botta.Chat.Chat> chats = new ArrayList<>();
+
 }

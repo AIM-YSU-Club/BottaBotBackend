@@ -17,4 +17,10 @@ public class ChatDTO {
         private String content;
         private String citation;
     }
+
+    @Getter
+    @Builder
+    public static class Messages {
+        private String question;
+    }
 }

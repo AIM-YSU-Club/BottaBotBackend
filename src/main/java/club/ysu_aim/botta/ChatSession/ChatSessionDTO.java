@@ -23,18 +23,16 @@ public class ChatSessionDTO {
     @Getter
     @Builder
     public static class CreateResponse {
-        private UUID SessionId;
+        private UUID sessionId;
         private Instant createdAt;
     }
     @Getter
     @Builder
     public static class SearchResponse {
-        private String Tilte;
+        private String tilte;
         private String content;
         private Instant createdAt;
     }
-
-
 
     @Getter
     @Builder
@@ -42,7 +40,12 @@ public class ChatSessionDTO {
         private UUID sessionId;
     }
 
-
-
-
+    @Getter
+    @Builder
+    public static class ListResponse {
+        private UUID sessionId;
+        private String title;
+        private List chats;
+        private Instant updatedAt;
+    }
 }

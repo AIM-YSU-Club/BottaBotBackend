@@ -64,3 +64,10 @@ email-verification:
   expiration-minutes: 30
   resend-cooldown-seconds: 60
   daily-limit: 5
+
+
+# AI 레이어 엔트리포인트
+ai:
+  server:
+    base-url: ${AI_SERVER_BASE_URL:http://localhost:8000}
+

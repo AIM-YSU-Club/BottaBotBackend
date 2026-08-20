@@ -1,5 +1,6 @@
 package club.ysu_aim.botta.Document;
 
+import club.ysu_aim.botta.Notebook.Notebook;
 import club.ysu_aim.botta.Source.Source;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -23,6 +24,11 @@ public class Document {
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "document_id", nullable = false, updatable = false)
     private UUID documentId;
+
+    /** 소속 노트북 */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "notebook_id", nullable = false)
+    private Notebook notebook;
 
     /** 소속 소스 */
     @ManyToOne(fetch = FetchType.LAZY)

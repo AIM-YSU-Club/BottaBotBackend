@@ -1,6 +1,6 @@
 package club.ysu_aim.botta.Document;
 
-import club.ysu_aim.botta.Notebook.Notebook;
+import club.ysu_aim.botta.Source.Source;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +10,7 @@ import java.util.UUID;
 
 /**
  * 벡터화를 위해 쪼개진 문서 청크.
- * Notebook에만 소속되며, Source와의 직접 참조는 두지 않는다.
+ * 원본 소스에 소속되며, 노트북 범위는 source → notebook 경로로 식별한다.
  */
 @Entity
 @Getter
@@ -24,10 +24,10 @@ public class Document {
     @Column(name = "document_id", nullable = false, updatable = false)
     private UUID documentId;
 
-    /** 소속 노트북 */
+    /** 소속 소스 */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "notebook_id", nullable = false)
-    private Notebook notebook;
+    @JoinColumn(name = "source_id", nullable = false)
+    private Source source;
 
     /** 본문(청크) */
     @Column(columnDefinition = "TEXT")

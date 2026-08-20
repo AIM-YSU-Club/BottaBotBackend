@@ -1,38 +1,22 @@
 package club.ysu_aim.botta.Chat;
 
-import club.ysu_aim.botta.ChatSession.ChatSession;
-import club.ysu_aim.botta.ChatSession.ChatSessionDTO;
-import club.ysu_aim.botta.ChatSession.ChatSessionService;
-import club.ysu_aim.botta.Notebook.NotebookDTO;
-import club.ysu_aim.botta.Security.CustomUserDetails;
-import jakarta.validation.Valid;
+import io.swagger.v3.oas.annotations.Hidden;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.UUID;
-
+/**
+ * 개별 대화(Chat) 관련 API 컨트롤러.
+ * <p>
+ * 대화 세션 및 메시지 스트리밍 엔드포인트는
+ * {@link club.ysu_aim.botta.ChatSession.ChatSessionController}에서 통합 관리됩니다.
+ * </p>
+ */
 @Slf4j
+@Hidden
+@RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/chats")
 public class ChatController {
-
-    @GetMapping("/chat-sessions/{sessionId}/messages")
-
-    @PostMapping("/chat-sessions/{sessionId}/messages")
-    public ResponseEntity<ChatSession.CreateResponse> createSession(
-            @Valid @RequestBody NotebookDTO.CreateRequest request,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
-
-        UUID userId = userDetails.getUserId();
-
-        ChatSessionDTO.CreateResponse response = ChatSessionService.createSession(userId, request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
 }

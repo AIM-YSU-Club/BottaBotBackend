@@ -1,17 +1,35 @@
 package club.ysu_aim.botta.EmailVerification;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.mail.MailException;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-/** 메일 발송을 도입하기 전까지 사용하는 무동작 구현체. 토큰을 로그에도 남기지 않는다. */
+@Slf4j
 @Component
 public class GoogleEmailVerificationNotifier implements EmailVerificationNotifier {
-    /**
-     * 메일 발송 연동 전까지 호출 계약만 유지하고 외부 작업은 수행하지 않는다.
-     *
-     * @param email 인증 대상 이메일
-     * @param rawToken 이메일 링크에 포함할 원문 토큰
-     */
+
+    private final JavaMailSender javaMailSender;
+
+    public GoogleEmailVerificationNotifier(JavaMailSender javaMailSender) {
+        this.javaMailSender = javaMailSender;
+    }
+
+    @Async
     @Override
     public void sendVerification(String email, String rawToken) {
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(email);
+            message.setSubject("이메일 인증을 완료해주세요");
+            message.setText("인증 토큰: " + rawToken);
+            javaMailSender.send(message);
+
+            log.info("이메일 발송 성공 대상: {}", email);
+        } catch (MailException e) {
+            log.error("이메일 발송 실패 대상: {}", email, e);
+        }
     }
 }

@@ -91,8 +91,8 @@ public class NotebookService {
         Notebook notebook = validateAndGetNotebook(userId, notebookId);
         notebookRepository.delete(notebook);
     }
-
-    private Notebook validateAndGetNotebook(UUID userId, UUID notebookId) {
+    // SourceService에서 호출해야 하므로 public으로 변경
+    public Notebook validateAndGetNotebook(UUID userId, UUID notebookId) {
         Notebook notebook = notebookRepository.findById(notebookId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노트북입니다."));
 

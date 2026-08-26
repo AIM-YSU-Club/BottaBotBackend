@@ -15,7 +15,7 @@ import java.util.ArrayList;
 @Entity
 @Builder
 @AllArgsConstructor
-@ToString(exclude = {"sources", "chatSessions", "documents"})
+@ToString(exclude = {"sources", "chatSessions"})
 @Getter
 @Setter
 @NoArgsConstructor

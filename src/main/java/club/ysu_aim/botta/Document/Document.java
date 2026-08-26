@@ -1,5 +1,6 @@
 package club.ysu_aim.botta.Document;
 
+import club.ysu_aim.botta.Notebook.Notebook;
 import club.ysu_aim.botta.Source.Source;
 import jakarta.persistence.*;
 import lombok.Getter;

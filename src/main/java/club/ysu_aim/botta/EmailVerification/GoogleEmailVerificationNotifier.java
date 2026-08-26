@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 
 /** 메일 발송을 도입하기 전까지 사용하는 무동작 구현체. 토큰을 로그에도 남기지 않는다. */
 @Component
-public class NoOpEmailVerificationNotifier implements EmailVerificationNotifier {
+public class GoogleEmailVerificationNotifier implements EmailVerificationNotifier {
     /**
      * 메일 발송 연동 전까지 호출 계약만 유지하고 외부 작업은 수행하지 않는다.
      *

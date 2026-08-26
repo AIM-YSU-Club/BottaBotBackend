@@ -52,7 +52,13 @@ public class ChatService {
     private String aiServerBaseUrl;
 
     private final ExecutorService streamingExecutor = Executors.newCachedThreadPool();
+        /**
+     * AI 서버 스트리밍 호출용 클라이언트.
+     * 기본 JDK HttpClient는 HTTP/2 업그레이드를 시도해 FastAPI(Starlette)가
+     * multipart 폼({@code chat_session_id}, {@code prompt})을 못 읽고 422를 내는 경우가 있어 HTTP/1.1로 고정한다.
+     */
     private final HttpClient httpClient = HttpClient.newBuilder()
+            .version(HttpClient.Version.HTTP_1_1)
             .connectTimeout(Duration.ofSeconds(10))
             .build();
 

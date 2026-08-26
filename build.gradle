@@ -45,8 +45,8 @@ dependencies {
     runtimeOnly 'org.postgresql:postgresql'
 
     // AI
-//    implementation 'org.springframework.ai:spring-ai-openai-spring-boot-starter'
-//    implementation 'org.springframework.ai:spring-ai-pgvector-store-spring-boot-starter'
+    //implementation 'org.springframework.ai:spring-ai-openai-spring-boot-starter'
+    //implementation 'org.springframework.ai:spring-ai-pgvector-store-spring-boot-starter'
 
     // JWT
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
@@ -58,6 +58,9 @@ dependencies {
 
     // Redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    // Mail
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
 }
 
 dependencyManagement {

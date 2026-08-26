@@ -30,11 +30,6 @@ public class Document {
     @JoinColumn(name = "source_id", nullable = false)
     private Source source;
 
-    /** 소속 소스 */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "source_id", nullable = false)
-    private Source source;
-
     /** 본문(청크) */
     @Column(columnDefinition = "TEXT")
     private String chunk;

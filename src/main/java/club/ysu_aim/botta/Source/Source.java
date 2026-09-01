@@ -50,4 +50,8 @@ public class Source {
     /** 연결된 파일 목록 */
     @OneToMany(mappedBy = "source", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<club.ysu_aim.botta.File.File> files = new ArrayList<>();
+
+    /** 벡터화된 문서 청크 */
+    @OneToMany(mappedBy = "source", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<club.ysu_aim.botta.Document.Document> documents = new ArrayList<>();
 }

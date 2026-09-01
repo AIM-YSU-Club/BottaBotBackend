@@ -15,7 +15,7 @@ import java.util.ArrayList;
 @Entity
 @Builder
 @AllArgsConstructor
-@ToString(exclude = {"sources", "chatSessions", "documents"})
+@ToString(exclude = {"sources", "chatSessions"})
 @Getter
 @Setter
 @NoArgsConstructor
@@ -60,11 +60,6 @@ public class Notebook {
     @Builder.Default
     @OneToMany(mappedBy = "notebook", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<club.ysu_aim.botta.ChatSession.ChatSession> chatSessions = new ArrayList<>();
-
-    /** 문서 청크 목록 */
-    @Builder.Default
-    @OneToMany(mappedBy = "notebook", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<club.ysu_aim.botta.Document.Document> documents = new ArrayList<>();
 
     public void update(String title, String description) {
         if (title != null && !title.trim().isEmpty()) {

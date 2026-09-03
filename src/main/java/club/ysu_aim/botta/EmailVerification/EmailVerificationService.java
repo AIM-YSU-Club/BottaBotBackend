@@ -8,20 +8,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.HexFormat;
 import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
-public class EmailVerficationService {
+public class EmailVerificationService {
     private static final EmailVerificationPurpose PURPOSE = EmailVerificationPurpose.VERIFY_EMAIL;
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 

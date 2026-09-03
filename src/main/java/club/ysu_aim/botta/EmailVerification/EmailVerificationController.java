@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/members/email-verification")
 @lombok.RequiredArgsConstructor
-public class EmailVerficationController {
-    private final EmailVerficationService verificationService;
+public class EmailVerificationController {
+    private final EmailVerificationService verificationService;
 
     /**
      * 이메일 인증 메일 발송 또는 재발송 요청을 접수한다.

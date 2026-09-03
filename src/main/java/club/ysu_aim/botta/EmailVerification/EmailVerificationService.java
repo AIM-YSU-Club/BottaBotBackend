@@ -36,7 +36,7 @@ public class EmailVerificationService {
     private long dailyLimit;
 
     /**
-     * 신규 회원의 최초 이메일 인증 토큰을 발급한다.
+     * 신규 회원의 최초 이메일 인증번호를 발급한다.
      * 재발송 제한은 적용하지 않으며 실제 전송은 notifier 구현체에 위임한다.
      *
      * @param user 회원가입을 완료한 회원
@@ -66,8 +66,8 @@ public class EmailVerificationService {
      * 인증번호를 검증하고 회원의 이메일 인증을 완료한다.
      * 사용 여부를 쓰기 잠금으로 조회하여 동시 요청에서도 일회성 사용을 보장한다.
      *
-     * @param randomNum 이메일 링크에서 전달된 원문 토큰
-     * @throws EmailVerificationException 토큰이 없거나, 만료되었거나, 이미 사용된 경우
+     * @param randomNum 이메일 링크에서 전달된 인증번호
+     * @throws EmailVerificationException 인증번호가 없거나, 만료되었거나, 이미 사용된 경우
      */
     @Transactional
     public void confirm(String randomNum) {
@@ -77,7 +77,7 @@ public class EmailVerificationService {
 
         Instant now = clock.instant();
         EmailVerification verification = verificationRepository
-                .findByTokenHashAndPurpose(randomNum, PURPOSE)
+                .findByRandomNumAndPurpose(randomNum, PURPOSE)
                 .orElseThrow(this::invalidNum);
 
         if (verification.isUsed()) {
@@ -100,7 +100,7 @@ public class EmailVerificationService {
     }
 
     /**
-     * 기존 미사용 토큰을 소진하고 새로운 랜덤 토큰의 해시와 만료 시각을 저장한다.
+     * 기존 미사용 인증번호를 소진하고 새로운 인증번호와 만료 시각을 저장한다.
      *
      * @param user 인증 대상 회원
      * @param enforceLimits 재발송 쿨다운과 일일 제한 적용 여부
@@ -115,7 +115,7 @@ public class EmailVerificationService {
             enforceResendLimits(user, now);
         }
 
-        verificationRepository.markUnusedTokensAsUsed(user.getUserId(), PURPOSE, now);
+        verificationRepository.markUnusedNumsAsUsed(user.getUserId(), PURPOSE, now);
         String randomNum = generateNum();
         EmailVerification verification = new EmailVerification(
                 user, PURPOSE, randomNum, now.plus(Duration.ofMinutes(expirationMinutes)), now);
@@ -157,7 +157,7 @@ public class EmailVerificationService {
         return String.valueOf(randomNumber);
     }
 
-    /** 유효하지 않은 인증 토큰에 사용할 일관된 도메인 예외를 생성한다. */
+    /** 유효하지 않은 인증번호에 사용할 일관된 도메인 예외를 생성한다. */
     private EmailVerificationException invalidNum() {
         return new EmailVerificationException(
                 "INVALID_VERIFICATION_Num", "유효하지 않은 인증 번호입니다.", HttpStatus.BAD_REQUEST);

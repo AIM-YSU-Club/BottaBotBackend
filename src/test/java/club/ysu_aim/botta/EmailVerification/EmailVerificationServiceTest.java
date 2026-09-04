@@ -27,7 +27,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class EmailVerficationServiceTest {
+class EmailVerificationServiceTest {
     private static final Instant NOW = Instant.parse("2026-08-06T00:00:00Z");
 
     @Mock
@@ -37,12 +37,12 @@ class EmailVerficationServiceTest {
     @Mock
     private EmailVerificationNotifier notifier;
 
-    private EmailVerficationService service;
+    private EmailVerificationService service;
     private User user;
 
     @BeforeEach
     void setUp() {
-        service = new EmailVerficationService(
+        service = new EmailVerificationService(
                 verificationRepository, userRepository, notifier,
                 Clock.fixed(NOW, ZoneOffset.UTC));
         ReflectionTestUtils.setField(service, "expirationMinutes", 30L);

@@ -8,20 +8,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Base64;
-import java.util.HexFormat;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
-public class EmailVerficationService {
+public class EmailVerificationService {
     private static final EmailVerificationPurpose PURPOSE = EmailVerificationPurpose.VERIFY_EMAIL;
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
@@ -40,7 +36,7 @@ public class EmailVerficationService {
     private long dailyLimit;
 
     /**
-     * 신규 회원의 최초 이메일 인증 토큰을 발급한다.
+     * 신규 회원의 최초 이메일 인증번호를 발급한다.
      * 재발송 제한은 적용하지 않으며 실제 전송은 notifier 구현체에 위임한다.
      *
      * @param user 회원가입을 완료한 회원
@@ -67,30 +63,30 @@ public class EmailVerficationService {
     }
 
     /**
-     * 원문 토큰을 검증하고 회원의 이메일 인증을 완료한다.
+     * 인증번호를 검증하고 회원의 이메일 인증을 완료한다.
      * 사용 여부를 쓰기 잠금으로 조회하여 동시 요청에서도 일회성 사용을 보장한다.
      *
-     * @param rawToken 이메일 링크에서 전달된 원문 토큰
-     * @throws EmailVerificationException 토큰이 없거나, 만료되었거나, 이미 사용된 경우
+     * @param randomNum 이메일 링크에서 전달된 인증번호
+     * @throws EmailVerificationException 인증번호가 없거나, 만료되었거나, 이미 사용된 경우
      */
     @Transactional
-    public void confirm(String rawToken) {
-        if (rawToken == null || rawToken.isBlank()) {
-            throw invalidToken();
+    public void confirm(String randomNum) {
+        if (randomNum == null || randomNum.isBlank()) {
+            throw invalidNum();
         }
 
         Instant now = clock.instant();
         EmailVerification verification = verificationRepository
-                .findByTokenHashAndPurpose(hash(rawToken), PURPOSE)
-                .orElseThrow(this::invalidToken);
+                .findByRandomNumAndPurpose(randomNum, PURPOSE)
+                .orElseThrow(this::invalidNum);
 
         if (verification.isUsed()) {
             throw new EmailVerificationException(
-                    "USED_VERIFICATION_TOKEN", "이미 사용된 인증 토큰입니다.", HttpStatus.CONFLICT);
+                    "USED_VERIFICATION_NUM", "이미 사용된 인증 번호입니다.", HttpStatus.CONFLICT);
         }
         if (verification.isExpired(now)) {
             throw new EmailVerificationException(
-                    "EXPIRED_VERIFICATION_TOKEN", "만료된 인증 토큰입니다.", HttpStatus.GONE);
+                    "EXPIRED_VERIFICATION_NUM", "만료된 인증 번호입니다.", HttpStatus.GONE);
         }
 
         User user = verification.getUser();
@@ -104,7 +100,7 @@ public class EmailVerficationService {
     }
 
     /**
-     * 기존 미사용 토큰을 소진하고 새로운 랜덤 토큰의 해시와 만료 시각을 저장한다.
+     * 기존 미사용 인증번호를 소진하고 새로운 인증번호와 만료 시각을 저장한다.
      *
      * @param user 인증 대상 회원
      * @param enforceLimits 재발송 쿨다운과 일일 제한 적용 여부
@@ -119,12 +115,12 @@ public class EmailVerficationService {
             enforceResendLimits(user, now);
         }
 
-        verificationRepository.markUnusedTokensAsUsed(user.getUserId(), PURPOSE, now);
-        String rawToken = generateToken();
+        verificationRepository.markUnusedNumsAsUsed(user.getUserId(), PURPOSE, now);
+        String randomNum = generateNum();
         EmailVerification verification = new EmailVerification(
-                user, PURPOSE, hash(rawToken), now.plus(Duration.ofMinutes(expirationMinutes)), now);
+                user, PURPOSE, randomNum, now.plus(Duration.ofMinutes(expirationMinutes)), now);
         verificationRepository.save(verification);
-        notifier.sendVerification(user.getEmail(), rawToken);
+        notifier.sendVerification(user.getEmail(), randomNum);
     }
 
     /**
@@ -153,34 +149,17 @@ public class EmailVerficationService {
     }
 
     /**
-     * URL에 안전하게 포함할 수 있는 256비트 암호학적 랜덤 토큰을 생성한다.
-     *
-     * @return Base64 URL-safe 형식의 원문 토큰
+     * @return 인증번호로 사용할 6자리 난수 생성
      */
-    private String generateToken() {
-        byte[] bytes = new byte[32];
-        SECURE_RANDOM.nextBytes(bytes);
-        return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
+    private String generateNum() {
+        Random random = new Random();
+        int randomNumber = random.nextInt(888889) + 111111; // 111111 ~ 999999 범위
+        return String.valueOf(randomNumber);
     }
 
-    /**
-     * 원문 토큰이 유출되지 않도록 SHA-256 해시 문자열로 변환한다.
-     *
-     * @param token 해싱할 원문 토큰
-     * @return 16진수 SHA-256 해시
-     */
-    private String hash(String token) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            return HexFormat.of().formatHex(digest.digest(token.getBytes(StandardCharsets.UTF_8)));
-        } catch (NoSuchAlgorithmException exception) {
-            throw new IllegalStateException("SHA-256 is not available", exception);
-        }
-    }
-
-    /** 유효하지 않은 인증 토큰에 사용할 일관된 도메인 예외를 생성한다. */
-    private EmailVerificationException invalidToken() {
+    /** 유효하지 않은 인증번호에 사용할 일관된 도메인 예외를 생성한다. */
+    private EmailVerificationException invalidNum() {
         return new EmailVerificationException(
-                "INVALID_VERIFICATION_TOKEN", "유효하지 않은 인증 토큰입니다.", HttpStatus.BAD_REQUEST);
+                "INVALID_VERIFICATION_Num", "유효하지 않은 인증 번호입니다.", HttpStatus.BAD_REQUEST);
     }
 }

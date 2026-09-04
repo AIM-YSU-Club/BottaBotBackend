@@ -16,8 +16,8 @@ import org.springframework.stereotype.Repository;
 public interface EmailVerificationRepository extends JpaRepository<EmailVerification, UUID> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Optional<EmailVerification> findByTokenHashAndPurpose(
-            String tokenHash, EmailVerificationPurpose purpose);
+    Optional<EmailVerification> findByRandomNumAndPurpose(
+            String randomNum, EmailVerificationPurpose purpose);
 
     Optional<EmailVerification> findTopByUserUserIdAndPurposeOrderByCreatedAtDesc(
             UUID userId, EmailVerificationPurpose purpose);
@@ -33,7 +33,7 @@ public interface EmailVerificationRepository extends JpaRepository<EmailVerifica
                and verification.purpose = :purpose
                and verification.usedAt is null
             """)
-    int markUnusedTokensAsUsed(@Param("userId") UUID userId,
+    int markUnusedNumsAsUsed(@Param("userId") UUID userId,
                                @Param("purpose") EmailVerificationPurpose purpose,
                                @Param("usedAt") Instant usedAt);
 }

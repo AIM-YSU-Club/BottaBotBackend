@@ -1,6 +1,6 @@
 package club.ysu_aim.botta.User;
 
-import club.ysu_aim.botta.EmailVerification.EmailVerficationService;
+import club.ysu_aim.botta.EmailVerification.EmailVerificationService;
 import club.ysu_aim.botta.Security.JwtTokenProvider;
 import club.ysu_aim.botta.Security.TokenDto;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,7 @@ public class UserService {
     private final RedisService redisService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final EmailVerficationService emailVerificationService;
+    private final EmailVerificationService emailVerificationService;
 
     /**
      * 회원 정보를 저장하고 동일 트랜잭션에서 최초 이메일 인증 토큰을 발급한다.

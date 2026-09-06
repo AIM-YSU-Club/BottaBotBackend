@@ -1,5 +1,6 @@
 package club.ysu_aim.botta.User;
 
+import club.ysu_aim.botta.EmailVerification.EmailVerificationResponse;
 import club.ysu_aim.botta.common.ApiEnvelope;
 import club.ysu_aim.botta.User.UserService;
 import club.ysu_aim.botta.User.UserResponse;
@@ -31,6 +32,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Slf4j //로그찍기
@@ -79,11 +81,6 @@ private long refreshTokenExpirationTime;
         }
         String normalizedEmail = request.getEmail().trim().toLowerCase();
         request.setEmail(normalizedEmail);
-        //중복검사
-        if (userRepository.findByEmail(normalizedEmail).isPresent()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(ApiEnvelope.failure("DUPLICATE_EMAIL", "이미 사용 중인 이메일입니다."));
-        }
         try {
             User registeredUser = userService.register(request);
             return ResponseEntity.ok(ApiEnvelope.success(
@@ -93,6 +90,18 @@ private long refreshTokenExpirationTime;
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(ApiEnvelope.failure("INTERNAL_ERROR", "회원가입 중 오류가 발생했습니다."));
         }
+    }
+    @Operation(
+            summary = "이메일 중복검사",
+            description = "입력받은 이메일을 중복검사 후 사용가능하면 true, 중복이라 사용불가하면 false반환")
+    @GetMapping("/duplicate")
+    public ApiEnvelope<Map<String, Boolean>> checkDuplicate(@RequestParam String email){
+        if(email == null || email.isBlank()){
+            return ApiEnvelope.success(java.util.Collections.singletonMap("isAvailable", false));
+        }
+        String normalizedEmail = email.trim().toLowerCase();
+        boolean isAvailable = userRepository.findByEmail(normalizedEmail).isEmpty();
+        return ApiEnvelope.success(java.util.Collections.singletonMap("isAvailable", isAvailable));
     }
 
     /**
